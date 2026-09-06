@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-content">
+            <h1 class="app-title">💪 Workout Tracker</h1>
+            <button class="btn-reset" id="resetBtn" aria-label="Reset to sample workout">
+                ↺ Reset
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        <!-- Day Navigation -->
+        <nav class="day-navigation">
+            <div class="days-scroll-container">
+                <div class="days-list" id="daysNavigation">
+                    <!-- Generated dynamically -->
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section class="dashboard" id="dashboard">
+                <div class="dashboard-grid">
+                    <!-- Today's Workout Card -->
+                    <div class="dashboard-card">
+                        <h3 class="dashboard-label">Today's Workout</h3>
+                        <p class="dashboard-value" id="todayWorkoutName">Rest Day</p>
+                    </div>
+
+                    <!-- Exercises Count -->
+                    <div class="dashboard-card">
+                        <h3 class="dashboard-label">Exercises</h3>
+                        <p class="dashboard-value" id="exerciseCount">0</p>
+                    </div>
+
+                    <!-- Daily Progress -->
+                    <div class="dashboard-card">
+                        <h3 class="dashboard-label">Completed Today</h3>
+                        <p class="dashboard-value" id="completedCount">0 / 0</p>
+                    </div>
+
+                    <!-- Daily Percentage -->
+                    <div class="dashboard-card">
+                        <h3 class="dashboard-label">Daily Progress</h3>
+                        <p class="dashboard-value" id="dailyPercentage">0%</p>
+                    </div>
+                </div>
+
+                <!-- Weekly Stats -->
+                <div class="weekly-stats">
+                    <h3 class="dashboard-label">Weekly Progress</h3>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="weeklyProgressBar"></div>
+                    </div>
+                    <p class="progress-text" id="weeklyProgressText">0 / 0 exercises completed</p>
+                </div>
+            </section>
+
+            <!-- Day Header with Edit Button -->
+            <div class="day-header">
+                <h2 class="day-title" id="dayTitle">Loading...</h2>
+                <button class="btn-secondary" id="editDayNameBtn" aria-label="Edit day name">
+                    ✎ Edit Day Name
+                </button>
+            </div>
+
+            <!-- Rest Day Message -->
+            <div class="rest-day-message" id="restDayMessage" style="display: none;">
+                <p>This is a rest day. Recover, hydrate, and prepare for your next workout!</p>
+                <button class="btn-secondary" id="addExerciseToRestBtn">
+                    + Add Exercise
+                </button>
+            </div>
+
+            <!-- Exercise List -->
+            <section class="exercise-list" id="exerciseList">
+                <!-- Generated dynamically -->
+            </section>
+
+            <!-- Add Exercise Button -->
+            <div class="add-exercise-section" id="addExerciseSection">
+                <button class="btn-primary btn-large" id="addExerciseBtn">
+                    + Add Exercise
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Day Name Modal -->
+    <div class="modal" id="editDayModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Day Name</h2>
+                <button class="modal-close" id="closeDayModal" aria-label="Close modal">×</button>
+            </div>
+            <form id="editDayForm" class="modal-form">
+                <div class="form-group">
+                    <label for="dayNameInput">Day Name</label>
+                    <input
+                        type="text"
+                        id="dayNameInput"
+                        name="dayName"
+                        placeholder="e.g., Upper Chest + Delts"
+                        required
+                    >
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" id="cancelDayBtn">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit/Add Exercise Modal -->
+    <div class="modal" id="exerciseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="exerciseModalTitle">Add Exercise</h2>
+                <button class="modal-close" id="closeExerciseModal" aria-label="Close modal">×</button>
+            </div>
+            <form id="exerciseForm" class="modal-form">
+                <div class="form-group">
+                    <label for="exerciseName">Exercise Name *</label>
+                    <input
+                        type="text"
+                        id="exerciseName"
+                        name="exerciseName"
+                        placeholder="e.g., Incline DB Press"
+                        required
+                    >
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="exerciseSets">Sets *</label>
+                        <input
+                            type="number"
+                            id="exerciseSets"
+                            name="exerciseSets"
+                            min="1"
+                            max="10"
+                            value="3"
+                            required
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="exerciseReps">Reps (e.g., 6–10 or 8) *</label>
+                        <input
+                            type="text"
+                            id="exerciseReps"
+                            name="exerciseReps"
+                            placeholder="6–10 or 8"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="exerciseRest">Rest Time</label>
+                        <input
+                            type="text"
+                            id="exerciseRest"
+                            name="exerciseRest"
+                            placeholder="90 sec"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="exerciseMuscle">Muscle Group</label>
+                        <input
+                            type="text"
+                            id="exerciseMuscle"
+                            name="exerciseMuscle"
+                            placeholder="Chest"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="exerciseNotes">Notes</label>
+                    <textarea
+                        id="exerciseNotes"
+                        name="exerciseNotes"
+                        placeholder="Add optional notes..."
+                        rows="3"
+                    ></textarea>
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" id="cancelExerciseBtn">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        Save Exercise
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content modal-confirm">
+            <div class="modal-header">
+                <h2 id="confirmTitle">Confirm</h2>
+                <button class="modal-close" id="closeConfirmModal" aria-label="Close modal">×</button>
+            </div>
+            <p id="confirmMessage"></p>
+            <div class="modal-buttons">
+                <button type="button" class="btn-secondary" id="confirmCancel">
+                    Cancel
+                </button>
+                <button type="button" class="btn-danger" id="confirmAction">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
