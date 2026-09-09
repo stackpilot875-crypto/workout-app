@@ -538,37 +538,25 @@ function resetToDefault() {
     }
 } 
 
-function saveCustomWorkout() {
-    try {
-        const customcopy = structuredClone(appState.workout)
-        localStorage.setItem(SAVED_CUSTOM_WORKOUT_KEY, JSON.stringify(customcopy));
-        showCustomWorkoutSavedMessage();
-    } catch (error) {
-        console.error("error saving custom workout:", error);
-        alert("failed to save custom workout");
-    }
-}
-
-function hasCustomSavedWorkout() {
-    const saved = localStorage.getItem(SAVED_CUSTOM_WORKOUT_KEY);
-    return saved !== null;
-}
-
-function loadCustomSavedWorkout() {
-    try{
-        const saved = localStorage.getItem(SAVED_CUSTOM_WORKOUT_KEY);
-        if (saved) {
-            return JSON.parse(saved);
-        }
-        return null;
-    } catch (error) {
-        console.error("Error loading custom workout:", error);
-        return null;
-    }
-}
-
-function showCustomWorkoutSavedMessage() {
-    alert("✓ Workout saved! Reset will now go to this version.");
+/**
+ * Show confirmation modal before saving custom workout
+ */
+function confirmSaveCustomWorkout() {
+    showConfirmModal(
+        "Save Custom Workout?",
+        "This will save your current workout as your personal custom version. The Reset button will now restore to this version.",
+        () => {
+            try {
+                const customCopy = structuredClone(appState.workout);
+                localStorage.setItem(SAVED_CUSTOM_WORKOUT_KEY, JSON.stringify(customCopy));
+                closeAllModals();
+            } catch (error) {
+                console.error("Error saving custom workout:", error);
+            }
+        },
+        "Save Workout",  // Confirm button text
+        "btn-primary"    // Confirm button class (Green/Red accent style)
+    );
 }
 
 // ============================================
@@ -686,13 +674,17 @@ function closeAllModals() {
 /**
  * Show confirmation modal
  */
-function showConfirmModal(title, message, onConfirm) {
+function showConfirmModal(title, message, onConfirm, actionText = "Confirm", actionClass = "btn-danger") {
     document.getElementById("confirmTitle").textContent = title;
     document.getElementById("confirmMessage").textContent = message;
     
     const confirmBtn = document.getElementById("confirmAction");
     
-    // Remove old listeners
+    // Set button text and style dynamically
+    confirmBtn.textContent = actionText;
+    confirmBtn.className = actionClass;
+    
+    // Remove old listeners to prevent double triggers
     const newConfirmBtn = confirmBtn.cloneNode(true);
     confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
     
@@ -1166,9 +1158,9 @@ function handleEditDayNameSubmit(e) {
  * Set up all event listeners
  */
 function setupEventListeners() {
-    const saveBtn = document.getElementById("saveBtn");
+        const saveBtn = document.getElementById("saveBtn");
     if (saveBtn) {
-        saveBtn.addEventListener("click", saveCustomWorkout);
+        saveBtn.addEventListener("click", confirmSaveCustomWorkout);
     }
     
     // Reset button
