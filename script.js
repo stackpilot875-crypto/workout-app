@@ -7,6 +7,7 @@
 // ============================================
 
 const STORAGE_KEY = "personalWorkoutPlan";
+const SAVED_CUSTOM_WORKOUT_KEY = "customSavedWorkout";
 
 // Default workout split - used on first visit
 const DEFAULT_WORKOUT = {
@@ -475,7 +476,7 @@ let appState = {
 function loadWorkout() {
     try {
         const saved = localStorage.getItem(STORAGE_KEY);
-        
+       
         if (saved) {
             // Load existing saved workout
             appState.workout = JSON.parse(saved);
@@ -508,17 +509,66 @@ function saveWorkout() {
  * Reset to default workout with confirmation
  */
 function resetToDefault() {
-    showConfirmModal(
-        "Reset to Sample Workout?",
-        "This will replace all changes with the original sample workout. All progress will be lost.",
-        () => {
-            appState.workout = structuredClone(DEFAULT_WORKOUT);
-            appState.currentDayIndex = 0;
-            saveWorkout();
-            render();
-            closeAllModals();
+    const customWorkout = loadCustomSavedWorkout();
+
+    if (customWorkout) {
+        showConfirmModal(
+            "Reset to saved workout?",
+            "this will reset to your last saved workout. Current unsaved changes will be lost.",
+            () => {
+                appState.workout = structuredClone(customWorkout);
+                appState.currentDayIndex = 0;
+                saveWorkout();
+                render();
+                closeAllModals();
+            }
+        );
+    }else{
+        showConfirmModal(
+            "Reset to sample workout?",
+            "you haven't saved a custom workout yet. this will reset to the default sample workout.",
+            () => {
+                appState.workout= structuredClone(DEFAULT_WORKOUT);
+                appState.currencyDayIndex = 0;
+                saveWorkout(),
+                render(),
+                closeModal();
+            }
+        );
+    }
+} 
+
+function saveCustomWorkout() {
+    try {
+        const customcopy = structuredClone(appState.workout)
+        localStorage.setItem(SAVED_CUSTOM_WORKOUT_KEY, JSON.stringify(customcopy));
+        showCustomWorkoutSavedMessage();
+    } catch (error) {
+        console.error("error saving custom workout:", error);
+        alert("failed to save custom workout");
+    }
+}
+
+function hasCustomSavedWorkout() {
+    const saved = localStorage.getItem(SAVED_CUSTOM_WORKOUT_KEY);
+    return saved !== null;
+}
+
+function loadCustomSavedWorkout() {
+    try{
+        const saved = localStorage.getItem(SAVED_CUSTOM_WORKOUT_KEY);
+        if (saved) {
+            return JSON.parse(saved);
         }
-    );
+        return null;
+    } catch (error) {
+        console.error("Error loading custom workout:", error);
+        return null;
+    }
+}
+
+function showCustomWorkoutSavedMessage() {
+    alert("✓ Workout saved! Reset will now go to this version.");
 }
 
 // ============================================
@@ -1116,6 +1166,11 @@ function handleEditDayNameSubmit(e) {
  * Set up all event listeners
  */
 function setupEventListeners() {
+    const saveBtn = document.getElementById("saveBtn");
+    if (saveBtn) {
+        saveBtn.addEventListener("click", saveCustomWorkout);
+    }
+    
     // Reset button
     document.getElementById("resetBtn").addEventListener("click", resetToDefault);
     
