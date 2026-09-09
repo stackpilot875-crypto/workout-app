@@ -506,6 +506,42 @@ function saveWorkout() {
 }
 
 /**
+ * Save current workout as custom saved version
+ */
+function saveCustomWorkout() {
+    try {
+        const customCopy = structuredClone(appState.workout);
+        localStorage.setItem(SAVED_CUSTOM_WORKOUT_KEY, JSON.stringify(customCopy));
+    } catch (error) {
+        console.error("Error saving custom workout:", error);
+    }
+}
+
+/**
+ * Check if user has a saved custom workout
+ */
+function hasCustomSavedWorkout() {
+    const saved = localStorage.getItem(SAVED_CUSTOM_WORKOUT_KEY);
+    return saved !== null;
+}
+
+/**
+ * Load custom saved workout if it exists
+ */
+function loadCustomSavedWorkout() {
+    try {
+        const saved = localStorage.getItem(SAVED_CUSTOM_WORKOUT_KEY);
+        if (saved) {
+            return JSON.parse(saved);
+        }
+        return null;
+    } catch (error) {
+        console.error("Error loading custom workout:", error);
+        return null;
+    }
+}
+
+/**
  * Reset to default workout with confirmation
  */
 function resetToDefault() {
@@ -513,30 +549,34 @@ function resetToDefault() {
 
     if (customWorkout) {
         showConfirmModal(
-            "Reset to saved workout?",
-            "this will reset to your last saved workout. Current unsaved changes will be lost.",
+            "Reset to Saved Workout?",
+            "This will reset to your last saved custom workout. Current unsaved changes will be lost.",
             () => {
                 appState.workout = structuredClone(customWorkout);
                 appState.currentDayIndex = 0;
                 saveWorkout();
                 render();
                 closeAllModals();
-            }
+            },
+            "Reset Workout",
+            "btn-danger"
         );
-    }else{
+    } else {
         showConfirmModal(
-            "Reset to sample workout?",
-            "you haven't saved a custom workout yet. this will reset to the default sample workout.",
+            "Reset to Sample Workout?",
+            "You haven't saved a custom workout yet. This will reset to the default sample workout.",
             () => {
-                appState.workout= structuredClone(DEFAULT_WORKOUT);
-                appState.currencyDayIndex = 0;
-                saveWorkout(),
-                render(),
-                closeModal();
-            }
+                appState.workout = structuredClone(DEFAULT_WORKOUT);
+                appState.currentDayIndex = 0;
+                saveWorkout();
+                render();
+                closeAllModals();
+            },
+            "Reset Workout",
+            "btn-danger"
         );
     }
-} 
+}
 
 /**
  * Show confirmation modal before saving custom workout
@@ -546,16 +586,11 @@ function confirmSaveCustomWorkout() {
         "Save Custom Workout?",
         "This will save your current workout as your personal custom version. The Reset button will now restore to this version.",
         () => {
-            try {
-                const customCopy = structuredClone(appState.workout);
-                localStorage.setItem(SAVED_CUSTOM_WORKOUT_KEY, JSON.stringify(customCopy));
-                closeAllModals();
-            } catch (error) {
-                console.error("Error saving custom workout:", error);
-            }
+            saveCustomWorkout();
+            closeAllModals();
         },
-        "Save Workout",  // Confirm button text
-        "btn-primary"    // Confirm button class (Green/Red accent style)
+        "Save Workout",
+        "btn-primary"
     );
 }
 
