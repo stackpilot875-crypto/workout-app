@@ -127,7 +127,7 @@ body {
     padding: var(--space-sm) var(--space-lg);
     border: var(--border-thick);
     font-size: var(--font-size-sm);
-    box-shadow: var(--shodow-sm);
+    box-shadow: var(--shadow-sm);
     text-transform: uppercase;
     cursor: pointer;
     transition: all var(--transition-fast);
@@ -266,7 +266,7 @@ button {
 .btn-large {
     padding: var(--space-lg) var(--space-2xl);
     font-size: var(--font-size-lg);
-    font-weight: 900px;
+    font-weight: 900;
     width: 100%;
     max-width: 400px;
     margin: 0 auto;
@@ -439,7 +439,7 @@ button {
     width: 100%;
     height: 24px;
     background: var(--color-bg);
-    border: var(--radius-thick);
+    border: var(--border-thick);
     overflow: hidden;
     margin-top: var(--space-md);
     margin-bottom: var(--space-md);
@@ -448,7 +448,7 @@ button {
 .progress-bar {
     height: 100%;
     background: var(--color-accent);
-    border-right: var(--radius-thick);
+    border-right: var(--border-thick);
     width: 0%;
     transition: width var(--transition-normal);
 }
@@ -493,7 +493,7 @@ button {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     border-bottom: var(--border-thick);
-    padding-bottom: var(--space_sm);
+    padding-bottom: var(--space-sm);
 }
 
 @media (max-width: 768px) {
@@ -650,7 +650,7 @@ button {
 .control-btn {
     background: var(--color-bg);
     color: var(--color-fg);
-    border: var(--color-medium);
+    border: var(--border-medium);
     width: 32px;
     height: 32px;
     display: flex;
@@ -797,7 +797,7 @@ button {
 .modal-content {
     background: var(--color-bg);
     border: var(--border-thick);
-    box-shadow: var(--shadow-x1);
+    box-shadow: var(--shadow-xl);
     max-width: 500px;
     width: 100%;
     max-height: 90vh;
@@ -887,7 +887,7 @@ button {
 .form-group textarea:focus {
     outline: none;
     border-color: var(--color-accent);
-    box-shadow: var (var(--shadow-md));
+    box-shadow: var (--shadow-md);
 }
 
 .form-group textarea {
@@ -1027,7 +1027,7 @@ input[type="number"] {
    ANIMATIONS
    ============================================ */
 
-@keyframes slideIn {
+@keyframes snapIn {
     from {
         opacity: 0;
         transform: translate(-4px, -4px);
@@ -1069,7 +1069,7 @@ input[type="number"] {
 }
 
 .exercise-checkbox:checked {
-    background-color: var(--color-success);
+    background-color: var(--color-accent);
     border-color: var(--color-fg);
 }
 
@@ -1079,7 +1079,7 @@ input[type="number"] {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: rgb(236, 47, 47);
+    color: #ffffff;
     font-weight: bold;
     font-size: 18px;
 }
