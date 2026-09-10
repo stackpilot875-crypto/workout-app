@@ -8,6 +8,7 @@
 
 const STORAGE_KEY = "personalWorkoutPlan";
 const SAVED_CUSTOM_WORKOUT_KEY = "customSavedWorkout";
+const CALENDAR_HISTORY_KEY = "ironyxWorkoutHistory";
 
 // Default workout split - used on first visit
 const DEFAULT_WORKOUT = {
@@ -464,6 +465,7 @@ let appState = {
     workout: null,           // Current workout plan
     currentDayIndex: 0,      // Currently selected day index
     editingExerciseId: null, // Track which exercise is being edited
+    calendarViewDate: new Date() //NEW: track currently viewed calendar month
 };
 
 // ============================================
@@ -539,6 +541,69 @@ function loadCustomSavedWorkout() {
         console.error("Error loading custom workout:", error);
         return null;
     }
+}
+
+/**
+ * Get formatted date key in YYYY-MM-DD format (local time)
+ */
+function getTodayDateString(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+/**
+ * Load full history object from localStorage
+ */
+function loadWorkoutHistory() {
+    try {
+        const historyData = localStorage.getItem(CALENDAR_HISTORY_KEY);
+        return historyData ? JSON.parse(historyData) : {};
+    } catch (error) {
+        console.error("Error loading workout history:", error);
+        return {};
+    }
+}
+
+/**
+ * Save history object to localStorage
+ */
+function saveWorkoutHistory(historyObj) {
+    try {
+        localStorage.setItem(CALENDAR_HISTORY_KEY, JSON.stringify(historyObj));
+    } catch (error) {
+        console.error("Error saving workout history:", error);
+    }
+}
+
+/**
+ * Check today's workout completion and record it in history
+ * Rule: ALL exercises in today's scheduled day must be completed (and total > 0).
+ */
+function checkAndUpdateTodayHistory() {
+    const todayStr = getTodayDateString();
+    const currentDay = getCurrentDay();
+    const history = loadWorkoutHistory();
+
+    if (!currentDay || !currentDay.exercises || currentDay.exercises.length === 0) {
+        // Rest day: do not record as a completed workout
+        return;
+    }
+
+    const total = currentDay.exercises.length;
+    const completed = currentDay.exercises.filter(ex => ex.completed).length;
+    const isFullyCompleted = (completed === total && total > 0);
+
+    // Update history for today
+    history[todayStr] = {
+        completed: isFullyCompleted,
+        completedCount: completed,
+        totalCount: total,
+        dayName: currentDay.name
+    };
+
+    saveWorkoutHistory(history);
 }
 
 /**
@@ -733,6 +798,79 @@ function showConfirmModal(title, message, onConfirm, actionText = "Confirm", act
 // ============================================
 // 6. RENDERING FUNCTIONS
 // ============================================
+
+
+/**
+ * Render the read-only workout history calendar
+ */
+function renderCalendar() {
+    const grid = document.getElementById("calendarDaysGrid");
+    const monthYearLabel = document.getElementById("calendarMonthYear");
+    if (!grid || !monthYearLabel) return;
+
+    grid.innerHTML = "";
+
+    const viewDate = appState.calendarViewDate;
+    const year = viewDate.getFullYear();
+    const month = viewDate.getMonth(); // 0-indexed (0 = Jan, 8 = Sept)
+
+    const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+    monthYearLabel.textContent = `${monthNames[month]} ${year}`;
+
+    // Calculate days in month and starting day of week
+    const firstDayIndex = new Date(year, month, 1).getDay(); // 0 = Sun, 1 = Mon ...
+    const adjustedFirstDay = (firstDayIndex === 0) ? 6 : firstDayIndex - 1; // Shift to Monday start
+    const totalDaysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const todayStr = getTodayDateString(new Date());
+    const history = loadWorkoutHistory();
+
+    // 1. Add empty padding slots before 1st of the month
+    for (let i = 0; i < adjustedFirstDay; i++) {
+        const emptyCell = document.createElement("div");
+        emptyCell.className = "cal-day empty";
+        grid.appendChild(emptyCell);
+    }
+
+    // 2. Add each day of the month
+    for (let d = 1; d <= totalDaysInMonth; d++) {
+        const dayCell = document.createElement("div");
+        dayCell.className = "cal-day";
+
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+        // Check if this date is TODAY
+        if (dateStr === todayStr) {
+            dayCell.classList.add("today");
+        }
+
+        // Date number label
+        const numSpan = document.createElement("span");
+        numSpan.textContent = d;
+        dayCell.appendChild(numSpan);
+
+        // Check history for workout record on this date
+        const dayRecord = history[dateStr];
+        const dot = document.createElement("span");
+        dot.className = "cal-dot";
+
+        if (dayRecord && dayRecord.completed === true) {
+            dot.classList.add("completed"); // 100% completed: RED DOT
+            dayCell.title = `${dateStr}: ${dayRecord.dayName} (Completed)`;
+        } else if (dayRecord && dayRecord.completed === false) {
+            dot.classList.add("incomplete"); // Partially completed: Outlined Dot
+            dayCell.title = `${dateStr}: Incomplete (${dayRecord.completedCount}/${dayRecord.totalCount})`;
+        } else {
+            dot.classList.add("incomplete"); // No workout / Rest
+        }
+
+        dayCell.appendChild(dot);
+        grid.appendChild(dayCell);
+    }
+}
 
 /**
  * Render the entire application
@@ -962,6 +1100,7 @@ function toggleExerciseCompletion(exerciseId) {
     if (exercise) {
         exercise.completed = !exercise.completed;
         saveWorkout();
+        checkAndUpdateTodayHistory();
         render();
     }
 }
@@ -1193,6 +1332,39 @@ function handleEditDayNameSubmit(e) {
  * Set up all event listeners
  */
 function setupEventListeners() {
+        // Calendar button open modal
+    const calendarBtn = document.getElementById("calendarBtn");
+    if (calendarBtn) {
+        calendarBtn.addEventListener("click", () => {
+            appState.calendarViewDate = new Date(); // Reset view to current month
+            renderCalendar();
+            openModal("calendarModal");
+        });
+    }
+
+    // Close calendar modal
+    const closeCalendarBtn = document.getElementById("closeCalendarModal");
+    if (closeCalendarBtn) {
+        closeCalendarBtn.addEventListener("click", () => closeModal("calendarModal"));
+    }
+
+    // Previous month navigation
+    const prevMonthBtn = document.getElementById("prevMonthBtn");
+    if (prevMonthBtn) {
+        prevMonthBtn.addEventListener("click", () => {
+            appState.calendarViewDate.setMonth(appState.calendarViewDate.getMonth() - 1);
+            renderCalendar();
+        });
+    }
+
+    // Next month navigation
+    const nextMonthBtn = document.getElementById("nextMonthBtn");
+    if (nextMonthBtn) {
+        nextMonthBtn.addEventListener("click", () => {
+            appState.calendarViewDate.setMonth(appState.calendarViewDate.getMonth() + 1);
+            renderCalendar();
+        });
+    }
         const saveBtn = document.getElementById("saveBtn");
     if (saveBtn) {
         saveBtn.addEventListener("click", confirmSaveCustomWorkout);

@@ -144,6 +144,35 @@ body {
     box-shadow: 0 0 0 0 #000;
     transform: translate(4px, 4px);
 }
+
+/* Minimalist Neo-Brutalist Calendar Button */
+.btn-calendar {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    border: var(--border-medium);
+    padding: var(--space-sm);
+    font-size: var(--font-size-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    min-height: 40px;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-calendar:hover {
+    background: var(--color-light);
+    box-shadow: 0 0 0 0 #000;
+    transform: translate(2px, 2px);
+}
+
+.btn-calendar:active {
+    box-shadow: 0 0 0 0 #000;
+    transform: translate(2px, 2px);
+}
+
 /* Mobile Responsiveness for Header Buttons */
 @media (max-width: 480px) {
     .header-content {
@@ -934,6 +963,180 @@ button {
     .modal-buttons {
         flex-direction: column;
     }
+}
+
+/* ============================================
+   CALENDAR & WORKOUT HISTORY MODAL
+   ============================================ */
+
+.modal-calendar {
+    max-width: 440px;
+    width: 100%;
+}
+
+.calendar-container {
+    padding: var(--space-lg);
+}
+
+/* Month Navigation Bar */
+.calendar-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: var(--border-thick);
+    background: var(--color-light);
+    padding: var(--space-sm) var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.calendar-month-year {
+    font-size: var(--font-size-base);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-cal-nav {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    border: var(--border-medium);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 900;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-cal-nav:hover {
+    background: var(--color-fg);
+    color: #fff;
+    box-shadow: 0 0 0 0 #000;
+    transform: translate(1px, 1px);
+}
+
+/* Weekday Labels Grid */
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.calendar-weekdays span {
+    font-size: 11px;
+    font-weight: 900;
+    color: var(--color-dark);
+    text-transform: uppercase;
+}
+
+/* Calendar Days Grid */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: var(--space-lg);
+}
+
+/* Individual Calendar Day Cell */
+.cal-day {
+    aspect-ratio: 1 / 1;
+    border: 1px solid var(--color-medium);
+    background: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3px 2px;
+    font-size: 12px;
+    font-weight: 700;
+    position: relative;
+    user-select: none;
+}
+
+/* Empty padding day from adjacent months */
+.cal-day.empty {
+    border-color: transparent;
+    background: transparent;
+}
+
+/* TODAY INDICATOR: Bold Black Border */
+.cal-day.today {
+    border: 3px solid #000000;
+    background: var(--color-light);
+    font-weight: 900;
+}
+
+/* Workout Status Dots */
+.cal-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-bottom: 2px;
+}
+
+/* 100% Completed Workout: Solid Red */
+.cal-dot.completed {
+    background: var(--color-accent);
+    border: 1px solid #000;
+}
+
+/* Incomplete / Partial Workout: Outlined Empty Dot */
+.cal-dot.incomplete {
+    background: transparent;
+    border: 1px solid var(--color-medium);
+}
+
+/* Calendar Legend at the bottom */
+.calendar-legend {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: var(--border-medium);
+    padding-top: var(--space-md);
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-box.legend-today {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #000;
+    background: var(--color-light);
+}
+
+.legend-dot.legend-completed {
+    width: 10px;
+    height: 10px;
+    background: var(--color-accent);
+    border: 1px solid #000;
+    border-radius: 50%;
+}
+
+.legend-dot.legend-incomplete {
+    width: 10px;
+    height: 10px;
+    background: transparent;
+    border: 1px solid var(--color-medium);
+    border-radius: 50%;
+}
+
+.legend-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--color-dark);
 }
 
 /* ============================================

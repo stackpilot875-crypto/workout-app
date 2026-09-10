@@ -11,7 +11,10 @@
     <header class="app-header">
         <div class="header-content"> 
             <h1 class="app-title">IRONY-X</h1>
-            <div class="header-buttons">
+                        <div class="header-buttons">
+                <button class="btn-calendar" id="calendarBtn" aria-label="View workout history calendar" title="Workout History">
+                    📅
+                </button>
                 <button class="btn-reset" id="resetBtn" aria-label="Reset to saved workout">
                     ↺ Reset
                 </button>
@@ -236,6 +239,57 @@
                 <button type="button" class="btn-danger" id="confirmAction">
                     Confirm
                 </button>
+            </div>
+        </div>
+    </div>
+
+        <!-- Calendar / History Modal -->
+    <div class="modal" id="calendarModal" role="dialog" aria-modal="true" aria-labelledby="calendarMonthYear">
+        <div class="modal-content modal-calendar">
+            <div class="modal-header">
+                <h2>Workout History</h2>
+                <button class="modal-close" id="closeCalendarModal" aria-label="Close calendar modal">×</button>
+            </div>
+            
+            <div class="calendar-container">
+                <!-- Month & Year Navigation -->
+                <div class="calendar-nav">
+                    <button class="btn-cal-nav" id="prevMonthBtn" aria-label="Previous month">◀</button>
+                    <span class="calendar-month-year" id="calendarMonthYear">September 2026</span>
+                    <button class="btn-cal-nav" id="nextMonthBtn" aria-label="Next month">▶</button>
+                </div>
+
+                <!-- Days of the Week Header -->
+                <div class="calendar-weekdays">
+                    <span>MON</span>
+                    <span>TUE</span>
+                    <span>WED</span>
+                    <span>THU</span>
+                    <span>FRI</span>
+                    <span>SAT</span>
+                    <span>SUN</span>
+                </div>
+
+                <!-- 35/42 Date Cells Grid (Populated dynamically via JavaScript) -->
+                <div class="calendar-grid" id="calendarDaysGrid">
+                    <!-- Dynamic Date Blocks -->
+                </div>
+
+                <!-- Neo-Brutalist Legend -->
+                <div class="calendar-legend">
+                    <div class="legend-item">
+                        <span class="legend-box legend-today"></span>
+                        <span class="legend-label">Today</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot legend-completed"></span>
+                        <span class="legend-label">100% Completed</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot legend-incomplete"></span>
+                        <span class="legend-label">Incomplete</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
