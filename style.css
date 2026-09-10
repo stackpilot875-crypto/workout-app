@@ -1224,6 +1224,31 @@ input[type="number"] {
     .modal-buttons button {
         width: 100%;
     }
+
+    .calendar-container {
+        padding: var(--space-md);
+    }
+
+    .calendar-weekdays,
+    .calendar-grid {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 2px;
+    }
+
+    .calendar-weekdays span,
+    .cal-day {
+        min-width: 0;
+    }
+
+    .calendar-weekdays span {
+        font-size: 10px;
+    }
+
+    .cal-day {
+        width: 100%;
+        padding: 2px 1px;
+        font-size: 11px;
+    }
 }
 
 /* ============================================
